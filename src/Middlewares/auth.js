@@ -1,5 +1,4 @@
 import userModel from "../../DB/Models/user.model.js";
-import { asyncHandler } from "../utils/errorHandling.js";
 import { systemRoles } from "../utils/systemRoles.js";
 import { decodeToken } from "../utils/tokenFunction.js";
 
