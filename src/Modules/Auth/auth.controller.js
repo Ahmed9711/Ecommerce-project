@@ -1,7 +1,7 @@
 import { customAlphabet } from 'nanoid';
 import userModel from '../../../DB/Models/user.model.js'
 import { sendEmail } from "../../services/sendEmail.js";
-import { decodeToken, generateToken } from "../../utils/tokenFunction.js";
+import { decodeToken, generateToken } from '../../utils/tokenFunction.js';
 import bcrypt from 'bcryptjs'
 
 const nanoId = customAlphabet('123456789',6)
