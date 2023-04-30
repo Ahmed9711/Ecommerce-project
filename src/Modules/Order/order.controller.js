@@ -2,7 +2,9 @@ import cartModel from "../../../DB/Models/cart.model.js";
 import couponModel from "../../../DB/Models/coupon.model.js";
 import orderModel from "../../../DB/Models/order.model.js";
 import productModel from "../../../DB/Models/product.model.js";
+import payment from "../../utils/payment.js";
 import { validateCoupon } from "../Coupon/coupon.controller.js";
+import Stripe from "stripe";
 
 export const createOrder = async (req, res, next) => {
     const userId = req.user._id;
@@ -93,6 +95,38 @@ export const createOrder = async (req, res, next) => {
         await cartModel.updateOne({userId},{
             $pull: {products: {productId: {$in: productIds}}}
         })
+        //payment with card
+        if(order.paymentMethod){
+            if(req.body.coupon){
+                const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+                const coupon = await stripe.coupons.create({percent_off: req.body.coupon.amount})
+                req.body.couponId = coupon.id
+            }
+            const session = await payment({
+                payment_method_types: [order.paymentMethod],
+                mode: 'payment',
+                customer_email: req.user.email,
+                metadata: {
+                    orderId: order._id.toString()
+                },
+                cancel_url: `${process.env.CANCEL_URL}?order=${order._id}`,
+                success_url: `${process.env.SUCCESS_URL}?order=${order._id}`,
+                discounts: req.body.couponId? [{coupon: req.body.couponId}]: [],
+                line_items: order.products.map((product) => {
+                  return  {
+                            price_data:{
+                                currency: 'EGP',
+                                product_data:{
+                                    name: product.name
+                                },
+                                unit_amount: product.productPrice * 100
+                            },
+                            quantity: product.quantity
+                        }
+                })
+            })
+            return res.status(201).json({message: "Order created", order, session})
+        }
         res.status(201).json({message: "Order created", order})
     }
     else{

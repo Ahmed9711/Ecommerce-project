@@ -50,6 +50,7 @@ export const initiateApp = (app, express) => {
     app.use(`${BaseURL}/product`,Routers.productRouter)
     app.use(`${BaseURL}/cart`,Routers.cartRouter)
     app.use(`${BaseURL}/order`,Routers.orderRouter)
+    app.use(`${BaseURL}/review`,Routers.reviewRouter)
     //Wrong routes
      app.use('*', (req,res) => {
         res.status(404).json({message: "NOT FOUND"})

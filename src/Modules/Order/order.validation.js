@@ -13,7 +13,8 @@ export const createOrderValidation = Joi.object({
             productId: generalFields._id,
             quantity: Joi.number().integer().positive().required()
         }).required()
-    ).optional()
+    ).optional(),
+    paymentMethod: Joi.string().required()
 }).required()
 
 export const cancelOrder = Joi.object({
