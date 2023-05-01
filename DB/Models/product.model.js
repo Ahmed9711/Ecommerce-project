@@ -70,10 +70,19 @@ const productSchema = new mongoose.Schema({
     userAddToWishList: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    }]
+    }],
+    rate: Number
 
 }, {
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true},
     timestamps: true
+})
+
+productSchema.virtual("Reviews",{
+    ref: 'Review',
+    localField: '_id',
+    foreignField: 'productId'
 })
 
 

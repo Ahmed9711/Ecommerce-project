@@ -125,9 +125,23 @@ export const updateProduct = async (req, res, next) => {
 
 export const getProductList = async (req, res, next) => {
     //ApiFeature Class
-    const apiFeature = new ApiFeatures(productModel.find(), req.query)
+    const apiFeature = new ApiFeatures(productModel.find().populate([{ 
+        path: 'Reviews', 
+        select: '-_id rate comment userIds'
+    }]), req.query)
     .paginate()
     const products = await apiFeature.mongooseQuery
+    for (const product of products) {
+        if(product.Reviews.length){
+            let sum = 0;
+            for (const review of product.Reviews) {
+                sum += review.rate
+            }
+            let avg = sum / product.Reviews.length
+            product.rate = parseFloat(avg).toFixed(2)
+            await product.save()
+        }
+    }
     //find with Pagination
     // const {page, size} = req.query;
     // const {limit, skip} = pagination({page, size})

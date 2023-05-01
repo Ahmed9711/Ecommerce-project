@@ -8,7 +8,7 @@ const reviewSchema = mongoose.Schema({
         max: 5
     },
     comment: String,
-    createdBy: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
@@ -19,6 +19,8 @@ const reviewSchema = mongoose.Schema({
         required: true
     }
 
+},{
+    timestamps: true,
 })
 
 const reviewModel = model.Review || model("Review", reviewSchema)
