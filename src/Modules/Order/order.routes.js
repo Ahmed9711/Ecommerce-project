@@ -8,5 +8,6 @@ const router = Router()
 
 router.post('/', auth(),validation(createOrderValidation) , asyncHandler(orderController.createOrder))
 router.put('/:orderId', auth(), validation(cancelOrder) , asyncHandler(orderController.cancelOrder))
+router.post('/webhook',express.raw({ type: 'application/json' }),asyncHandler(orderController.webHook))
 
 export default router;

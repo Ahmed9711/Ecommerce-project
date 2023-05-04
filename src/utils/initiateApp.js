@@ -5,7 +5,7 @@ import morgan from "morgan"
 import cors from 'cors'
 
 export const initiateApp = (app, express) => {
-    app.use(express.json())
+    //app.use(express.json())
     const port = process.env.PORT
     const BaseURL = '/ecommerce'
     var whitelist = ['http://example1.com', 'http://127.0.0.1:5500']
@@ -21,6 +21,14 @@ export const initiateApp = (app, express) => {
     // }
     // app.use(cors(corsOptions))
     //private - public
+    app.use((req, res, next) => {
+        if (req.originalUrl == '/order/webhook') {
+          next()
+        } else {
+          express.json({})(req, res, next)
+        }
+    })
+
     if (process.env.ENV_MODE == 'dev') {
         app.use(cors())
         app.use(morgan('dev'))

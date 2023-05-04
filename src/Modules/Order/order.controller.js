@@ -167,3 +167,30 @@ export const cancelOrder = async (req, res, next) => {
         next(new Error("Unknown error, try again"))
     }
 }
+
+export const webHook = async (req, res, next) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+  const endpointSecret = 'whsec_j9TmkYBSH5H6RJjPmDRwCFp2qt8jtcsw'
+
+  const sig = req.headers['stripe-signature']
+
+  let event
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret)
+  } catch (err) {
+    res.status(400).send(`Webhook Error: ${err.message}`)
+    return
+  }
+  const { orderId } = event.data.object.metadata
+  if (event.type == 'checkout.session.completed') {
+    await orderModel.findByIdAndUpdate(orderId, {
+      orderStatus: 'confirmed',
+    })
+    return res.status(200).json({ message: 'Payment successed' })
+  }
+  await orderModel.findByIdAndUpdate(orderId, {
+    orderStatus: 'payment failed',
+  })
+  return res.status(200).json({ message: 'Payment failed' })
+}
