@@ -36,3 +36,8 @@ export const updateProductValidation = Joi.object({
     }).optional(),
     productId: generalFields._id
 }).required()
+
+export const updateProductSchema = Joi.object({
+    id: generalFields._id.required(),
+    stock: Joi.number().integer().positive().required()
+}).required()

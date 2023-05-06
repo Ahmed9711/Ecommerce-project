@@ -1,6 +1,8 @@
 import { GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull } from "graphql"
 import productModel from "../../../../DB/Models/product.model.js"
 import { productType } from "./type.js"
+import { validationGraphQl } from "../../../Middlewares/validation.js"
+import { updateProductSchema } from "../product.validation.js"
 
 export const getAllProductsFields = {
     type: new GraphQLList(productType),
@@ -28,6 +30,7 @@ export const updateProductField = {
         stock: {type: GraphQLInt}
     },
     resolve: async (parent, args) => {
+        await validationGraphQl(updateProductSchema, args)
         const product = await productModel.findByIdAndUpdate(
             args.id,
             {stock: args.stock},

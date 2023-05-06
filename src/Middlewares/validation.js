@@ -43,3 +43,11 @@ export const validation = (schema, isHeader = false) => {
         next();
     }
 }
+
+export const validationGraphQl = async (schema, data) => {
+    const {error} = schema.validate(data,{abortEarly: false});
+    if(error){
+        throw new Error(error)
+    }
+    return true
+}   

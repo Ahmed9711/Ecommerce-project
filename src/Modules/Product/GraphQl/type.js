@@ -1,4 +1,5 @@
 import { GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
+import subCategoryModel from "../../../../DB/Models/subCategory.model.js";
 
 const imageType = new GraphQLObjectType({
     name: 'ImageType',
@@ -77,7 +78,14 @@ export const productType = new GraphQLObjectType({
             type: GraphQLID,
         },
         categoryId: {
-            type: categoryType,
+            type: GraphQLID,
+        },
+        SubCategories:{
+          type: new GraphQLList(subCategoryType),
+          resolve: async (parent, __) => {
+            const subcategories = await subCategoryModel.find({categoryId: parent.categoryId})
+            return subcategories
+          }
         },
         subCategoryId: {
             type: GraphQLID,
