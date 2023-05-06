@@ -1,8 +1,10 @@
 import { ConnectionDB } from "../../DB/connection.js"
 import { failResponse } from "./errorHandling.js"
 import * as Routers from '../Modules/index.routes.js'
+import { graphqlHTTP } from "express-graphql"
 import morgan from "morgan"
 import cors from 'cors'
+import { productSchema } from "../Modules/Product/GraphQl/schema.js"
 
 export const initiateApp = (app, express) => {
     //app.use(express.json())
@@ -21,6 +23,8 @@ export const initiateApp = (app, express) => {
     // }
     // app.use(cors(corsOptions))
     //private - public
+
+    //Webhook
     app.use((req, res, next) => {
         if (req.originalUrl == '/order/webhook') {
           next()
@@ -46,6 +50,10 @@ export const initiateApp = (app, express) => {
         })
         app.use(morgan('combined'))
     }
+    app.use('/graphQl', graphqlHTTP({
+        schema: productSchema,
+        graphiql: true
+    }))
     //Database connection
     ConnectionDB()
 
